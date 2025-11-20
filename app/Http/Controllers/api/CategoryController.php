@@ -44,50 +44,30 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCategoryRequest $request)
+    public function store(StoreCategoryRequest $request, CategoryService $service)
     {
-        /*
-        $rules = [
-            "name"=>"required|string|max:255"
-        ];
-        $v = $request->validate($rules);*/
         $v = $request->validated();
-        $category = Category::create($v);
+        $category = $service->store($v);
         return response()->json(new CategoryResource($category), 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(int $id)
+    public function show(int $id, CategoryService $service)
     {
-        try {
-            $category = Category::findOrFail($id);
-            $category->load('posts');
-            Log::info(json_encode($category));
-            return response()->json(new CategoryResource($category), 200);
-            //return response()->json($category,200);
-        } catch (Exception $e) {
-            Log::info(class_basename($e));
-            throw new NotFoundException("No existe la categoría" . $id);
-        }
+        $category = $service->showById($id);
+        return response()->json(new CategoryResource($category), 200);
     }
 
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCategoryRequest $request, Category $category)
+    public function update(UpdateCategoryRequest $request, int $id, CategoryService $service)
     {
-        //Log::info(json_encode($request->all()));
-        //Log::info(json_encode($category));
-        /*$rules = [
-            "name"=>"string|max:255"
-        ];
-        $v = $request->validate($rules);*/
         $v = $request->validated();
-        //Log::info(json_encode($category));
-        $category->update($v);
+        $category=$service->update($v, $id);
         return response()->json(new CategoryResource($category), 200);
     }
 
