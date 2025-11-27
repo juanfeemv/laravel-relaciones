@@ -25,4 +25,13 @@ class StoreCategoryRequest extends FormRequest
             "name"=>"required|string|max:255"
         ];
     }
+
+    public function messages()
+    {
+        return [
+            "name.required"=>"El campo nombre es obligatorio",
+            "name.string"=>"El campo nombre debe ser una cadena",
+            "name.max"=>"El campo nombre no puede tener más de 255 caracteres"
+        ];
+    }
 }
