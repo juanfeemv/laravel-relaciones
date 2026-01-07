@@ -45,4 +45,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // 1:1 - no tiene FK
+    public function profile(){
+        return $this->hasOne(Profile::class);
+    }
 }
