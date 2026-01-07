@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Services;
+
+use App\Exceptions\NotFoundException;
+use App\Models\Profile;
+
+class ProfileService
+{
+    private function findOrFail(int $id): Profile
+    {
+        $profile = Profile::find($id);
+
+        if (! $profile) {
+            throw new NotFoundException("Profile no encontrado: {$id}");
+        }
+
+        return $profile;
+    }
+
+    public function store(array $data): Profile
+    {
+        return Profile::create($data)->load('user');
+    }
+
+    public function update(array $data, int $id): Profile
+    {
+        $profile = $this->findOrFail($id);
+        $profile->update($data);
+
+        return $profile->load('user');
+    }
+
+    public function destroyById(int $id): void
+    {
+        $profile = $this->findOrFail($id);
+        $profile->delete();
+    }
+
+    public function showById(int $id): Profile
+    {
+        return $this->findOrFail($id)->load('user');
+    }
+}

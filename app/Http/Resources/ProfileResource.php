@@ -15,8 +15,11 @@ class ProfileResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'  => $this->id,
+            'id' => $this->id,
             'bio' => $this->bio,
+
+            // útil en admin, y no rompe si no lo cargas:
+            'user' => new UserResource($this->whenLoaded('user')),
         ];
     }
 }
