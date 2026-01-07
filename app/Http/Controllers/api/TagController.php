@@ -3,48 +3,64 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tags\StoreTagRequest;
+use App\Http\Requests\Tags\UpdateTagRequest;
+use App\Http\Resources\TagCollection;
+use App\Http\Resources\TagResource;
 use App\Models\Tag;
+use App\Services\TagService;
 use Illuminate\Http\Request;
 
 class TagController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * GET /api/v1/tags
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $n = $request->integer('per_page', 10);
+
+        $q = Tag::query();
+
+        if ($search = $request->query('search')) {
+            $q->where('name', 'like', "%{$search}%");
+        }
+
+        // opcional: traer número de posts asociados
+        // $q->withCount('posts');
+
+        $result = $q->orderBy('name')->paginate($n);
+
+        return new TagCollection($result);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreTagRequest $request, TagService $service)
     {
-        //
+        $tag = $service->store($request->validated());
+
+        return (new TagResource($tag))
+            ->response()
+            ->setStatusCode(201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Tag $tag)
+    public function show(int $id, TagService $service)
     {
-        //
+        $tag = $service->showById($id);
+
+        return new TagResource($tag);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Tag $tag)
+    public function update(UpdateTagRequest $request, int $id, TagService $service)
     {
-        //
+        $tag = $service->update($request->validated(), $id);
+
+        return new TagResource($tag);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Tag $tag)
+    public function destroy(int $id, TagService $service)
     {
-        //
+        $service->destroyById($id);
+
+        return response()->noContent();
     }
 }

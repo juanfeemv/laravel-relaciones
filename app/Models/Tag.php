@@ -11,6 +11,6 @@ class Tag extends Model
     //n:m
     public function  posts(){
         return $this->belongsToMany(Post::class)
-        ->withPivot(['post_id']);
+        ->withTimestamps();
     }
 }
