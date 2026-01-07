@@ -5,6 +5,9 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Resources\AuthTokenResource;
+use App\Http\Resources\ProfileResource;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -27,11 +30,10 @@ class AuthController extends Controller
         $tokenName = $data['device_name'] ?? 'api-token';
         $token = $user->createToken($tokenName)->plainTextToken;
 
-        return response()->json([
+        return response()->json(new AuthTokenResource([
             'token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user,
-        ], 201);
+            'user'  => $user,
+        ]), 201);
     }
 
     public function login(LoginRequest $request)
@@ -49,18 +51,20 @@ class AuthController extends Controller
         $tokenName = $data['device_name'] ?? 'api-token';
         $token = $user->createToken($tokenName)->plainTextToken;
 
-        return response()->json([
+        return response()->json(new AuthTokenResource([
             'token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user,
-        ], 200);
+            'user'  => $user,
+        ]), 200);
     }
 
     public function me(Request $request)
     {
         // incluir profile:
-        // return $request->user()->load('profile');
-        return $request->user();
+        $user = $request->user()->load('profile');
+        return response()->json([
+        'user' => new UserResource($user),
+        'profile' => new ProfileResource($user->profile),
+    ]);
     }
 
     public function logout(Request $request)
