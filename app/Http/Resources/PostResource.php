@@ -16,8 +16,14 @@ class PostResource extends JsonResource
     {
         return [
             'id' => $this->id,
+
             'title' => $this->title,
-            'body'=> $this->body
+            'body' => $this->body,
+
+            'category' => new CategoryResource($this->whenLoaded('category')),
+            'author_profile' => new ProfileResource($this->whenLoaded('authorProfile')),
+
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
         ];
     }
 }
