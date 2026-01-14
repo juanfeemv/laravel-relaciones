@@ -1,0 +1,1 @@
+<template><div>Profiles (pendiente CRUD)</div></template>

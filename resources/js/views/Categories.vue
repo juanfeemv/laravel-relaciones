@@ -1,0 +1,1 @@
+template><div>Categories (pendiente CRUD)</div></template>

@@ -1,0 +1,1 @@
+<template><div>Tags (pendiente CRUD)</div></template>
